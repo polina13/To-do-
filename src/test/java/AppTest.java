@@ -7,6 +7,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import static org.fluentlenium.core.filter.FilterConstructor.*;
 import static org.assertj.core.api.Assertions.assertThat;
+
 public class AppTest extends FluentTest {
   public WebDriver webDriver = new HtmlUnitDriver();
 
@@ -24,50 +25,47 @@ public class AppTest extends FluentTest {
   @Test
   public void rootTest() {
       goTo("http://localhost:4567/");
-      assertThat(pageSource()).contains("Task list");
+      assertThat(pageSource()).contains("Todo list");
+  }
+  @Test
+  public void categoryIsCreatedTest() {
+    goTo("http://localhost:4567/");
+    click("a", withText("Add a new category"));
+    fill("#name").with("Household chores");
+    submit(".btn");
+    assertThat(pageSource()).contains("Your category has been saved.");
   }
 
   @Test
-  public void checkIfTaskCreatedTest() {
-      goTo("http://localhost:4567/");
-      click("a", withText("Add a new task"));
-      fill("#description").with("Wash the dishes");
-      submit(".btn");
-      assertThat(pageSource()).contains("Your task has been saved.");
-  }
-  @Test
-  public void taskIsDisplayedTest() {
-    goTo("http://localhost:4567/tasks/new");
-    fill("#description").with("Wash the dishes");
+  public void categoryIsDisplayedTest() {
+    goTo("http://localhost:4567/categories/new");
+    fill("#name").with("Household chores");
     submit(".btn");
-    click("a", withText("View all tasks"));
-    assertThat(pageSource()).contains("Wash the dishes");
+    click("a", withText("View categories"));
+    assertThat(pageSource()).contains("Household chores");
   }
 
   @Test
-  public void multipleTasksAreDisplayedTest() {
-    goTo("http://localhost:4567/tasks/new");
-    fill("#description").with("Wash the dishes");
+  public void categoryTasksFormIsDisplayed() {
+    goTo("http://localhost:4567/categories/new");
+    fill("#name").with("Shopping");
     submit(".btn");
-    goTo("http://localhost:4567/tasks/new");
-    fill("#description").with("Buy groceries");
-    submit(".btn");
-    click("a", withText("View all tasks"));
-    assertThat(pageSource()).contains("Wash the dishes");
-    assertThat(pageSource()).contains("Buy groceries");
+    click("a", withText("View categories"));
+    click("a", withText("Shopping"));
+    click("a", withText("Add a new task"));
+    assertThat(pageSource()).contains("Add a Task to Shopping");
   }
+
   @Test
-  public void taskShowPageDisplaysDescription() {
-    goTo("http://localhost:4567/tasks/new");
-    fill("#description").with("Wash the dishes");
+  public void tasksIsAddedAndDisplayed() {
+    goTo("http://localhost:4567/categories/new");
+    fill("#name").with("Banking");
     submit(".btn");
-    click("a", withText("View all tasks"));
-    click("a", withText("Wash the dishes"));
-    assertThat(pageSource()).contains("Wash the dishes");
-  }
-  @Test
-  public void taskNotFoundMessageShown() {
-    goTo("http://localhost:4567/tasks/999");
-    assertThat(pageSource()).contains("Task not found");
+    click("a", withText("View categories"));
+    click("a", withText("Banking"));
+    click("a", withText("Add a new task"));
+    fill("#description").with("Deposit paycheck");
+    submit(".btn");
+    assertThat(pageSource()).contains("Deposit paycheck");
   }
 }

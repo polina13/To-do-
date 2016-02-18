@@ -1,5 +1,11 @@
+success.vtl
 <h1>Success!</h1>
 
+#if ($task )
 Your task has been saved.
 
-<a href="/tasks">View all tasks</a>
+#elseif ($category)
+Your category has been saved.
+#end
+
+<a href="/categories">View categories</a>
